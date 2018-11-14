@@ -3,30 +3,34 @@ data = pd.read_csv('new_data.csv')
 from mayavi import mlab
 import numpy as  np
 
-temp_list = list(data['Theta [deg]'])
+STEP_THETA = 1
+STEP_PHI = 1
+[theta,phi] = np.mgrid[0:181:STEP_THETA, 0:360:STEP_PHI]
 
-x = []
-z = []
-y = []
 
-for elem in data.keys():
-    if elem != 'Theta [deg]':
-        entry = elem.find("Phi")+5
-        phi = int(elem[entry:elem.find('deg')])
-        x.extend([phi for i in range(len(temp_list))])
-        z.extend(data[elem])
+def find_value(data,phi, theta):
+    for el in data.keys():
+        if "Phi='"+str(phi) in el:
+            return data[el][theta]
+        
+def form_value(data,phi,theta):
+    z = np.array([[0. for i in range(len(phi[0]))] for j in range(len(theta))])
+    for i in range(len(theta)):
+        for j in range(len(phi[0])):
+            z[i][j] = find_value(data, phi[i][j], theta[i][j])
+    return z
 
-for _ in range(len(data.keys())-1):
-    y.extend([i for i in range(len(temp_list))])
+z = form_value(data, phi,theta)
 
-X = []
-Y = []
-Z = []
+x = z*np.cos(phi/57)*np.cos((theta-90)/57)
+y = z*np.sin(phi/57)*np.cos((theta-90)/57)
+z_to = z
+z = z * np.sin( (theta-90)/57)
 
-for i in range(len(x)):
-	X.append(z[i]*np.cos(x[i]/57)*np.cos(((y[i]-90))/57))
-	Y.append(z[i]*np.sin(x[i]/57)*np.cos(((y[i]-90))/57))
-	Z.append(z[i]*np.sin(((y[i]-90)/57)))
+#for i in range(len(x)):
+#	X.append(z[i]*np.cos(x[i]/57)*np.cos(((y[i]-90))/57))
+#	Y.append(z[i]*np.sin(x[i]/57)*np.cos(((y[i]-90))/57))
+#	Z.append(z[i]*np.sin(((y[i]-90)/57)))
 	
-mlab.points3d(X,Y,Z,z)
+mlab.mesh(y,z,x,scalars = z_to)
 a = int(input())
