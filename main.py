@@ -16,18 +16,18 @@ class Data_table():
 		
 		self.step_theta = step_theta
 		initial_phi = int(temp)
-		print(initial_phi)
+#		print(initial_phi)
 		temp = str(re.findall(r"Phi='[-0123456789]+", self.data.keys()[-1])[0])[5:]
 		end_phi = int(temp)
 		temp = str(re.findall(r"Phi='[-0123456789]+", self.data.keys()[2])[0])[5:]
 		second = int(temp)
 		step_phi = second - initial_phi
 		
-		print('{} - initial theta, {} - end_theta, {}-step_theta'.format(initial_theta,end_theta,step_theta))
-		print('{} - initial phi, {} - end_phi, {} - step_phi'.format(initial_phi, end_phi, step_phi))
+#		print('{} - initial theta, {} - end_theta, {}-step_theta'.format(initial_theta,end_theta,step_theta))
+#		print('{} - initial phi, {} - end_phi, {} - step_phi'.format(initial_phi, end_phi, step_phi))
 
 		[self.theta, self.phi] = np.mgrid[initial_theta:end_theta+1:step_theta,initial_phi:end_phi:step_phi]
-		print(self.phi)
+#		print(self.phi)
 		self.z = self.form_value(self.phi, self.theta)
 
 	def find_value(self,phi, theta):
@@ -43,10 +43,11 @@ class Data_table():
 		return z
 
 	def draw(self):
-		self.x = self.z*np.cos(self.phi/57)*np.cos((self.theta-90)/57)
-		self.y = self.z*np.sin(self.phi/57)*np.cos((self.theta-90)/57)
+		grad_to_rad = 180/np.pi
+		self.x = self.z*np.cos(self.phi/grad_to_rad)*np.cos((self.theta-90)/grad_to_rad)
+		self.y = self.z*np.sin(self.phi/grad_to_rad)*np.cos((self.theta-90)/grad_to_rad)
 		self.z_to = self.z
-		self.z = self.z * np.sin( (self.theta-90)/57)
+		self.z = self.z * np.sin( (self.theta-90)/grad_to_rad)
 		mlab.mesh(self.y,self.z,self.x,scalars = self.z_to)
 		a = int(input())
 
@@ -56,20 +57,7 @@ class Data_table():
 		return str(self.z)
 if __name__ == '__main__':
 	temp = Data_table('data_bow.csv')
-	print(temp)
+#	print(temp)
 	temp.draw()
 
-#z = form_value(data, phi,theta)
 
-#x = z*np.cos(phi/57)*np.cos((theta-90)/57)
-#y = z*np.sin(phi/57)*np.cos((theta-90)/57)
-#z_to = z
-#z = z * np.sin( (theta-90)/57)
-
-#for i in range(len(x)):
-#	X.append(z[i]*np.cos(x[i]/57)*np.cos(((y[i]-90))/57))
-#	Y.append(z[i]*np.sin(x[i]/57)*np.cos(((y[i]-90))/57))
-#	Z.append(z[i]*np.sin(((y[i]-90)/57)))
-	
-#mlab.mesh(y,z,x,scalars = z_to)
-#a = int(input())OB
